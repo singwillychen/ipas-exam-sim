@@ -21,6 +21,8 @@ iPAS 書齋把這三件事做成產品機制：
 | 錯題不會 | 每題四個選項都有獨立解析，說明「這個選項混淆了什麼概念」；錯題本自動收錄、答對後畢業 |
 | 沒節奏 | 出席簿日曆、連續天數、累計時數；8-bit 老學究老師依你的數據說話（MiniMax M2.7 生成），交卷後有閱卷動畫與紅筆手寫分數 |
 
+視覺上，像素風只用在兩個地方：老師的圖像與閱卷動畫；其餘介面採沉穩的書房風格（Noto Serif TC 標題、Noto Sans TC 內文），讓題目閱讀不受干擾。
+
 ## 2. 系統總覽
 
 ```
@@ -138,14 +140,18 @@ Edge Function `teacher-say` 接收 `context`（greeting / dashboard / result / w
 | 新增 RPC / 表 | 在 `supabase/migrations/` 加新檔，用 Supabase MCP 或 SQL Editor 套用 |
 | 換部署位置 | 整個 repo 是靜態檔，丟到任何 web server；只需確認 Supabase Auth 的 Site URL / Redirect URLs 加上新網址 |
 
-## 10. 已知限制
+## 10. 付費方案（封存設計）
+
+未來可能採「考券 + 期間方案」收費：單次 30 元、五回合 50 元、考前衝刺班 100 元。完整設計（成本、資料表、金流接口、啟用步驟）見 `docs/MONETIZATION.md`，資料表草稿在 `supabase/migrations/draft/0100_billing.sql`；目前**未套用、未在前端顯示**。
+
+## 11. 已知限制
 
 - 題庫為 AI 協助產生的原創模擬題（初級 120 題、中級 75 題），非官方試題；上線前建議人工抽查法規類題目（個資法、EU AI Act）。
 - 中級正式考試 L22／L23 擇一，系統允許同時勾選練習。
 - Email 註冊若 Supabase 開啟「確認信」，需點信箱連結才能登入；可在 Supabase Auth 設定關閉。
 - 老師對話由 LLM 生成，偶爾會有不精確的措辭；它只讀統計數字，不會看到題目內容。
 
-## 11. 目錄結構
+## 12. 目錄結構
 
 ```
 ipas-exam-sim/
@@ -154,7 +160,7 @@ ipas-exam-sim/
 │   ├── css/style.css           像素風樣式
 │   ├── js/app.js               路由與各頁面
 │   ├── js/api.js               Supabase 存取層
-│   ├── js/pixel-teacher.js     老師與頭像像素圖
+│   ├── js/pixel-teacher.js     老師像素圖、頭像色塊
 │   ├── js/charts.js            五力圖、出席簿
 │   ├── js/grading.js           閱卷動畫
 │   ├── js/config.js            公開設定
@@ -164,11 +170,11 @@ ipas-exam-sim/
 │   ├── QUESTION_SCHEMA.md      題庫格式
 │   └── questions/*.json        題庫
 ├── supabase/
-│   ├── migrations/             資料庫結構
+│   ├── migrations/             資料庫結構（draft/ 為未套用的付費方案草稿）
 │   ├── functions/teacher-say   老師對話 Edge Function
 │   ├── functions/import-questions
 │   └── seed/                   由 scripts 產生的 SQL（備援匯入）
 ├── scripts/                    匯入工具
 ├── tests/                      Playwright 端對端、API 安全測試
-└── docs/                       本白皮書與快速上手
+└── docs/                       白皮書、快速上手、付費方案設計
 ```

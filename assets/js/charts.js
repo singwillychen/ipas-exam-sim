@@ -46,7 +46,7 @@ export function radarSVG(dims, values, attempts = {}) {
   dims.forEach((d, i) => {
     const [x, y] = pt(i, R + 30);
     const anchor = Math.abs(Math.cos(ang(i))) < 0.2 ? "middle" : Math.cos(ang(i)) > 0 ? "start" : "end";
-    const g = el("g", { "font-family": "'Cubic 11','Noto Sans TC',monospace", "text-anchor": anchor });
+    const g = el("g", { "font-family": "'Noto Sans TC', sans-serif", "text-anchor": anchor });
     g.appendChild(el("text", { x, y: y - 4, "font-size": 15, fill: "#1b1b1f" }, [d.short || d.name]));
     const v = values[d.key];
     g.appendChild(el("text", { x, y: y + 14, "font-size": 15, fill: v == null ? "#8a8070" : v >= 70 ? "#2f7a4a" : "#c8322b" }, [v == null ? "尚無" : `${Math.round(v)}分`]));

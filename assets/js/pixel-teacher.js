@@ -134,134 +134,31 @@ export function mountTeacher(canvas, mood = "neutral") {
   };
 }
 
-// ---------- 學生像素頭像（16 x 16）----------
-const AVATARS = {
-  cat: [
-    "..k..........k..",
-    ".kok........kok.",
-    ".koook....koook.",
-    "kooooookkooooook",
-    "koooooooooooooook".slice(0,16),
-    "koowkoooooookwook".slice(0,16),
-    "kooooooooooooook",
-    "koooookpppkooook",
-    ".koooooooooooook".slice(0,16),
-    ".kooookkkkooook.",
-    "..kooooooooook..",
-    "...kkkkkkkkkk...",
-    "....kbbbbbbk....",
-    "...kbbbbbbbbk...",
-    "...kbbbbbbbbk...",
-    "...kkkkkkkkkk...",
-  ],
-  owl: [
-    "....kk....kk....",
-    "...kwwk..kwwk...",
-    "..kwwwwkkwwwwk..",
-    ".kwwkkwwwwkkwwk.",
-    ".kwkeekwwkeekwk.",
-    ".kwkeekwwkeekwk.",
-    ".kwwkkwkkwkkwwk.",
-    ".kwwwwkggkwwwwk.",
-    "..kwwwwwwwwwwk..",
-    "..kbwbwbwbwbwk..",
-    "..kwbwbwbwbwbk..",
-    "..kbwbwbwbwbwk..",
-    "...kwwwwwwwwk...",
-    "....kkkkkkkk....",
-    "...kggk..kggk...",
-    "...kkkk..kkkk...",
-  ],
-  fox: [
-    ".k............k.",
-    ".kok..........kok".slice(0,16),
-    ".krook......koork".slice(0,16),
-    ".krroookkkkooorrk".slice(0,16),
-    "krrrroooooooorrrk".slice(0,16),
-    "krrrrwooooowrrrrk".slice(0,16),
-    "krrrkwwoookwwrrrk".slice(0,16),
-    ".krrrwwookwwrrrk".slice(0,16),
-    ".krrrrwwkwwrrrrk",
-    "..krrrrwwwrrrrk.",
-    "...krrrwkwrrrk..",
-    "....kkkkkkkkk...",
-    "....kbbbbbbbk...",
-    "...kbbbbbbbbbk..",
-    "...kbbbbbbbbbk..",
-    "...kkkkkkkkkkk..",
-  ],
-  robot: [
-    ".......kk.......",
-    ".......kk.......",
-    "...kkkkkkkkkk...",
-    "..kggggggggggk..",
-    "..kgkLLkggkLLkgk".slice(0,16),
-    "..kgkLekggkLekgk".slice(0,16),
-    "..kgkkkkggkkkkgk".slice(0,16),
-    "..kggggggggggk..",
-    "..kgkrrrrrrkgk..",
-    "..kggkkkkkkggk..",
-    "...kkkkkkkkkk...",
-    ".kkkkbbbbbbkkkk.",
-    ".kggkbbbbbbkggk.",
-    ".kggkbbbbbbkggk.",
-    "....kbbbbbbk....",
-    "....kkkkkkkk....",
-  ],
-  panda: [
-    "..kkk......kkk..",
-    ".kkkkk....kkkkk.",
-    ".kkkwwwwwwwwkkk.",
-    "..kwwwwwwwwwwk..",
-    ".kwwkkkwwkkkwwk.",
-    ".kwkkeekwwkeekwk".slice(0,16),
-    ".kwkkkkkwwkkkkwk".slice(0,16),
-    ".kwwwwwwkkwwwwwk".slice(0,16),
-    ".kwwwwwkkkkwwwwk".slice(0,16),
-    "..kwwwwwwwwwwk..",
-    "...kwwwwwwwwk...",
-    "....kkkkkkkk....",
-    "...kkkbbbbkkk...",
-    "..kkkbbbbbbkkk..",
-    "..kkkbbbbbbkkk..",
-    "...kkkkkkkkkk...",
-  ],
-  frog: [
-    "...kkk....kkk...",
-    "..kwwwk..kwwwk..",
-    "..kwekk..kkewk..",
-    ".kkwwwkkkkwwwkk.",
-    "kooooooooooooook",
-    "kooooooooooooook",
-    "koooooooooooooook".slice(0,16),
-    "kookooooooooookok".slice(0,16),
-    ".kookkkkkkkkkook".slice(0,16),
-    ".koooooooooooook".slice(0,16),
-    "..kooooooooook..",
-    "...kkkkkkkkkk...",
-    "....kbbbbbbk....",
-    "...kbbbbbbbbk...",
-    "...kbbbbbbbbk...",
-    "...kkkkkkkkkk...",
-  ],
+// ---------- 學生頭像（色塊 + 姓名首字；介面不走像素風）----------
+const AVATAR_COLORS = {
+  moss: "#2b6a50", clay: "#b9332c", ochre: "#b8862b", ink: "#2f3b4a", plum: "#6b3a5b", teal: "#2a6f7a",
 };
-const AVATAR_PAL = {
-  ".": null, k: "#1b1b1f", o: "#f0b45c", w: "#f7f3e8", e: "#1b1b1f", p: "#e8a3a3", b: "#2b3f6b", r: "#d9622b", g: "#9aa3ad", L: "#e3f4ff",
-};
-const AVATAR_PAL_OVERRIDES = { frog: { o: "#6fbf5a" }, cat: { o: "#f0b45c" } };
+export const AVATAR_KEYS = Object.keys(AVATAR_COLORS);
+export const AVATAR_NAMES = { moss: "苔綠", clay: "朱紅", ochre: "赭黃", ink: "墨藍", plum: "紫檀", teal: "青瓷" };
 
-export const AVATAR_KEYS = Object.keys(AVATARS);
-export const AVATAR_NAMES = { cat: "橘貓", owl: "貓頭鷹", fox: "狐狸", robot: "機器人", panda: "熊貓", frog: "青蛙" };
+export function avatarColor(key) { return AVATAR_COLORS[key] || AVATAR_COLORS.moss; }
 
-export function drawAvatar(canvas, key = "cat") {
-  const rows = (AVATARS[key] || AVATARS.cat).map(r => r.padEnd(16, ".").slice(0, 16));
-  drawGrid(canvas, rows, { ...AVATAR_PAL, ...(AVATAR_PAL_OVERRIDES[key] || {}) });
+/** 圓形頭像：顏色 + 稱呼第一個字 */
+export function avatarEl(key, size = 32, name = "") {
+  const d = document.createElement("span");
+  d.className = "avatar";
+  d.style.width = d.style.height = size + "px";
+  d.style.fontSize = Math.round(size * 0.48) + "px";
+  d.style.background = avatarColor(key);
+  d.textContent = (name || "考").trim().slice(0, 1).toUpperCase();
+  d.title = name;
+  return d;
 }
 
-export function avatarEl(key, size = 32) {
-  const c = document.createElement("canvas");
-  c.style.width = c.style.height = size + "px";
-  c.className = "avatar-mini";
-  drawAvatar(c, key);
-  return c;
+/** 選色用的色塊 */
+export function swatchEl(key) {
+  const d = document.createElement("span");
+  d.className = "swatch";
+  d.style.background = avatarColor(key);
+  return d;
 }

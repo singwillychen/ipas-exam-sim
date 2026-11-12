@@ -1,7 +1,7 @@
 // iPAS 書齋 — 主程式（hash 路由 + 各頁面）
 import * as api from "./api.js";
 import { APP_NAME, PASS_SCORE, MINUTES_PER_QUESTION } from "./config.js";
-import { mountTeacher, drawAvatar, avatarEl, AVATAR_KEYS, AVATAR_NAMES } from "./pixel-teacher.js";
+import { mountTeacher, avatarEl, swatchEl, AVATAR_KEYS, AVATAR_NAMES } from "./pixel-teacher.js";
 import { radarSVG, calendarEl, fmtDuration, localDateStr } from "./charts.js";
 import { playGrading } from "./grading.js";
 
@@ -52,7 +52,7 @@ async function router() {
   if (!state.session && path !== "/login") { go("/login"); return; }
   if (state.session && path === "/login") { go("/"); return; }
   if (state.session && !state.profile) {
-    try { state.profile = await api.getProfile(); } catch { state.profile = { display_name: "考生", avatar: "cat", target_level: "L1" }; }
+    try { state.profile = await api.getProfile(); } catch { state.profile = { display_name: "考生", avatar: "moss", target_level: "L1" }; }
   }
   if (state.teacher) { state.teacher.destroy(); state.teacher = null; }
   renderTopbar(path);
@@ -71,8 +71,8 @@ function renderTopbar(path) {
   nav.innerHTML = tabs.map(([p, n]) => `<button class="tab ${path === p ? "active" : ""}" data-go="${p}">${n}</button>`).join("");
   nav.querySelectorAll("button").forEach(b => b.addEventListener("click", () => go(b.dataset.go)));
   who.innerHTML = "";
-  who.appendChild(avatarEl(state.profile?.avatar || "cat", 28));
-  who.appendChild(h(`<span class="pixel">${esc(state.profile?.display_name || "")}</span>`));
+  who.appendChild(avatarEl(state.profile?.avatar || "moss", 30, state.profile?.display_name));
+  who.appendChild(h(`<span>${esc(state.profile?.display_name || "")}</span>`));
   const out = h(`<button class="small ghost">登出</button>`);
   out.addEventListener("click", async () => { await api.signOut(); state.profile = null; go("/login"); });
   who.appendChild(out);
@@ -105,7 +105,7 @@ async function viewLogin(main) {
         </form>
         <form id="f-up" hidden>
           <label for="up-name">稱呼</label><input id="up-name" type="text" required maxlength="20" placeholder="老師要怎麼叫你">
-          <label>頭像</label>
+          <label>頭像顏色</label>
           <div class="avatar-pick" id="up-avatar"></div>
           <label>目標級別</label>
           <div class="choice-row" id="up-level">
@@ -130,10 +130,10 @@ async function viewLogin(main) {
 
   // 頭像選擇
   const pick = $("#up-avatar", card);
-  let avatar = "cat";
+  let avatar = "moss";
   AVATAR_KEYS.forEach(k => {
-    const lab = h(`<label class="choice ${k === avatar ? "on" : ""}" title="${AVATAR_NAMES[k]}"><canvas></canvas></label>`);
-    drawAvatar($("canvas", lab), k);
+    const lab = h(`<label class="choice ${k === avatar ? "on" : ""}" title="${AVATAR_NAMES[k]}"></label>`);
+    lab.appendChild(swatchEl(k));
     lab.addEventListener("click", () => { avatar = k; pick.querySelectorAll(".choice").forEach(c => c.classList.remove("on")); lab.classList.add("on"); });
     pick.appendChild(lab);
   });
@@ -201,14 +201,14 @@ async function viewDashboard(main) {
       <div class="card board">
         <div class="teacher-stage">
           <canvas class="teacher"></canvas>
-          <div class="bubble typing" id="bubble"><span class="who">老學究老師</span><span id="bubble-text"></span>
+          <div class="bubble typing has-refresh" id="bubble"><span class="who">老學究老師</span><span id="bubble-text"></span>
             <button class="small ghost refresh" id="bubble-refresh" title="再說一句">再說一句</button></div>
         </div>
         <div class="row" style="margin-top:1rem">
           <button class="primary" data-go="/exam/setup">開始模擬考</button>
           <button class="ghost" data-go="/wrongbook">錯題本（${data.wrong_count ?? 0}）</button>
           <span class="sp"></span>
-          <span class="pixel">目前目標：${lv.name}　<button class="small ghost" data-go="/profile">切換</button></span>
+          <span>目前目標：${lv.name}　<button class="small ghost" data-go="/profile">切換</button></span>
         </div>
       </div>
       <div class="stats" style="margin:1.5rem 0">
@@ -219,7 +219,7 @@ async function viewDashboard(main) {
       </div>
       <div class="grid two">
         <div class="card ruled">
-          <h2>學習五力圖　<small class="muted" style="font-family:var(--font-body);font-size:.8rem">${lv.name}・紅虛線＝70 分及格線</small></h2>
+          <h2>學習五力圖　<small class="muted" style="font-family:var(--font-body);font-weight:400;font-size:.8rem">${lv.name}・紅虛線＝70 分及格線</small></h2>
           <div class="radar-wrap" id="radar"></div>
           <ul class="radar-legend" id="legend"></ul>
         </div>
@@ -651,7 +651,7 @@ async function viewWrongBook(main) {
   const wrap = h(`
     <div>
       <div class="card ruled">
-        <div class="row"><h2 style="margin:0">錯題本・${lv.name}</h2><span class="sp"></span><span class="pixel">${wb.length} 題待克服</span>
+        <div class="row"><h2 style="margin:0">錯題本・${lv.name}</h2><span class="sp"></span><span>${wb.length} 題待克服</span>
           <button class="primary small" id="drill" ${wb.length ? "" : "disabled"}>錯題重練 10 題</button></div>
         <p class="hint">這裡列出「最近一次仍答錯」的題目。再考一次答對，它就會從錯題本畢業。點題目展開逐選項解析。</p>
         <div class="filterbar" id="topics"></div>
@@ -718,7 +718,7 @@ async function viewProfile(main) {
     <div class="card ruled" style="max-width:640px">
       <h2>學籍資料</h2>
       <label for="name">稱呼</label><input id="name" type="text" maxlength="20" value="${esc(p.display_name)}">
-      <label>頭像</label><div class="avatar-pick" id="avatar"></div>
+      <label>頭像顏色</label><div class="avatar-pick" id="avatar"></div>
       <label>目標級別（影響書齋的五力圖與錯題本）</label>
       <div class="choice-row" id="lv">
         <label class="choice ${p.target_level === "L1" ? "on" : ""}"><input type="radio" name="lv" value="L1" ${p.target_level === "L1" ? "checked" : ""}>初級</label>
@@ -729,10 +729,10 @@ async function viewProfile(main) {
       <p class="hint" style="margin-top:1.5rem">帳號：${esc(state.session.user.email)}</p>
     </div>`);
   main.appendChild(wrap);
-  let avatar = p.avatar || "cat";
+  let avatar = AVATAR_KEYS.includes(p.avatar) ? p.avatar : "moss";
   AVATAR_KEYS.forEach(k => {
-    const lab = h(`<label class="choice ${k === avatar ? "on" : ""}" title="${AVATAR_NAMES[k]}"><canvas></canvas></label>`);
-    drawAvatar($("canvas", lab), k);
+    const lab = h(`<label class="choice ${k === avatar ? "on" : ""}" title="${AVATAR_NAMES[k]}"></label>`);
+    lab.appendChild(swatchEl(k));
     lab.addEventListener("click", () => { avatar = k; wrap.querySelectorAll("#avatar .choice").forEach(c => c.classList.remove("on")); lab.classList.add("on"); });
     $("#avatar", wrap).appendChild(lab);
   });

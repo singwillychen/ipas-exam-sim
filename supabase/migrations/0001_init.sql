@@ -7,7 +7,7 @@ create extension if not exists pgcrypto;
 create table if not exists public.profiles (
   id            uuid primary key references auth.users(id) on delete cascade,
   display_name  text not null default '考生',
-  avatar        text not null default 'cat',          -- 像素頭像代號
+  avatar        text not null default 'moss',          -- 像素頭像代號
   target_level  text not null default 'L1' check (target_level in ('L1','L2')),
   exam_date     date,
   created_at    timestamptz not null default now(),
@@ -27,7 +27,7 @@ begin
   values (
     new.id,
     coalesce(nullif(new.raw_user_meta_data->>'display_name',''), split_part(coalesce(new.email,'考生'),'@',1)),
-    coalesce(nullif(new.raw_user_meta_data->>'avatar',''), 'cat'),
+    coalesce(nullif(new.raw_user_meta_data->>'avatar',''), 'moss'),
     coalesce(nullif(new.raw_user_meta_data->>'target_level',''), 'L1')
   )
   on conflict (id) do nothing;
